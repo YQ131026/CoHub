@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "CoHub",
+    "version": "1.0",
+    "description": "CoHub - Manage and categorize frequently used websites with data synchronization and external import. Created by Jesse (2024-11)",
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "CoHub"
+    },
+    "permissions": ["storage"],
+    "host_permissions": [
+      "*://*/*"
+    ],
+    "icons": {
+      "128": "icon.png"
+    },
+    "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'"
+    }
+}

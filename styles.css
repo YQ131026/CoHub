@@ -1,0 +1,444 @@
+/**
+ * Website Manager - A Chrome extension for managing websites
+ * @author Jesse
+ * @version v1.0
+ * @date 2024-11
+ */
+
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    min-width: 500px;
+    width: 100%;
+    background-color: #f8fafb;
+    color: #24292f;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+}
+  
+  .form-control {
+    min-width: 0; /* 允许输入框缩小 */
+    border-color: #e2e8f0;
+    background-color: #ffffff;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+    color: #1a1a1a;
+  }
+  
+  .form-control:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.2rem rgba(147, 197, 253, 0.25);
+  }
+  
+  #addButton {
+    white-space: nowrap;
+    background-color: #4CAF50;
+    border-color: #43A047;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+  }
+  
+  #addButton:hover {
+    background-color: #43A047;
+  }
+  
+  .table {
+    width: auto;
+    min-width: 100%;
+    table-layout: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .table th {
+    background-color: #e8f4f8;
+    color: #000000;
+    border-bottom: 2px solid #d1e4eb;
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .table td {
+    border-color: #edf2f7;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1a1a1a;
+  }
+  
+  .name-cell {
+    min-width: 100px;
+    max-width: none;
+  }
+  
+  .url-cell {
+    min-width: 200px;
+    max-width: none;
+  }
+  
+  .category-cell {
+    min-width: 100px;
+    max-width: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a1a1a;
+    letter-spacing: 0.2px;
+  }
+  
+  .action-cell {
+    width: 10%;
+    text-align: center;
+  }
+  
+  .url-link {
+    display: inline;
+    white-space: nowrap;
+    color: #2563eb;
+    text-decoration: none;
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+  }
+  
+  .url-link:hover {
+    color: #2980b9;
+  }
+  
+  #inputFeedback,
+  #remoteFeedback,
+  #addRemoteFeedback {
+    margin-top: 5px;
+  }
+  
+  #editButton,
+  #importButton,
+  #exportButton,
+  #addToggleButton,
+  #searchToggleButton,
+  #updateButton,
+  #manageRemotesButton {
+    background-color: transparent;
+    border: none;
+    color: #718096;
+  }
+  
+  #editButton:hover,
+  #importButton:hover,
+  #exportButton:hover,
+  #addToggleButton:hover,
+  #searchToggleButton:hover,
+  #updateButton:hover,
+  #manageRemotesButton:hover {
+    color: #4a5568;
+  }
+  
+  .input-group .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .input-group .btn i {
+    font-size: 1.25rem;
+  }
+  
+  .btn-light {
+    background-color: #f5f7fa;
+    border-color: #e4e7eb;
+    color: #606f7b;
+  }
+  
+  .btn-light:hover {
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+    color: #4a5568;
+  }
+  
+  /* 添加表单的样式 */
+  #addSection {
+    margin-top: 15px;
+  }
+  
+  #addToggleButton {
+    color: #007bff;
+  }
+  
+  #addToggleButton:hover {
+    color: #0056b3;
+  }
+  
+  /* 搜索框样式 */
+  #searchSection {
+    margin-bottom: 15px;
+  }
+  
+  #searchToggleButton {
+    color: #6c757d;
+  }
+  
+  #searchToggleButton:hover {
+    color: #343a40;
+  }
+  
+  /* 分类选项卡样式 */
+  .nav-tabs .nav-link.active {
+    background-color: #f8f9fa;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background-color: #3498db;
+    border-color: #e2e8f0;
+  }
+  
+  /* 确保在编辑模式下，表格内容对齐 */
+  .editing .table td input {
+    width: 100%;
+  }
+  
+  /* 模态对话框输入框样式 */
+  #updateModal .modal-body input,
+  #manageRemotesModal .modal-body input {
+    width: 100%;
+  }
+  
+  #updateModal .modal-footer .btn,
+  #manageRemotesModal .modal-footer .btn {
+    min-width: 80px;
+  }
+
+  /* 远程地址列表项样式 */
+  #remoteUrlList .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  #remoteUrlList .btn-danger {
+    padding: 0.2rem 0.5rem;
+  }
+
+  #clearAllLocalButton {
+    background-color: transparent;
+    color: #dc3545;
+    border: none;
+    padding: 5px;
+    margin-left: 10px;
+    transition: color 0.3s;
+  }
+
+  #clearAllLocalButton:hover {
+    color: #c82333;
+  }
+
+  #clearAllLocalButton i {
+    margin-right: 5px;
+  }
+
+  /* 确保表格容器可以水平滚动 */
+  .table-responsive {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 15px;
+  }
+
+  /* 导航标签样式 */
+  .nav-tabs .nav-link {
+    color: #7f8c8d;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.2px;
+  }
+  
+  .nav-tabs .nav-link.active {
+    color: #3498db;
+    background-color: #ffffff;
+    border-bottom: 2px solid #3498db;
+  }
+
+  /* 顶部按钮组样式 */
+  #editButton,
+  #importButton,
+  #exportButton,
+  #addToggleButton,
+  #searchToggleButton,
+  #updateButton,
+  #manageRemotesButton {
+    color: #718096;
+  }
+  
+  #editButton:hover,
+  #importButton:hover,
+  #exportButton:hover,
+  #addToggleButton:hover,
+  #searchToggleButton:hover,
+  #updateButton:hover,
+  #manageRemotesButton:hover {
+    color: #4a5568;
+  }
+
+  /* 添加按钮样式 */
+  #addButton {
+    background-color: #4CAF50;
+    border-color: #43A047;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+  }
+  
+  #addButton:hover {
+    background-color: #43A047;
+  }
+
+  /* 分页控件样式 */
+  .pagination .page-link {
+    color: #3498db;
+    border-color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background-color: #3498db;
+    border-color: #3498db;
+  }
+
+  /* 模态框样式 */
+  .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    background-color: #f8fafb;
+    border-bottom: 1px solid #edf2f7;
+  }
+
+  /* 删除按钮样式优化 */
+  .btn-danger {
+    background-color: #ff6b6b;
+    border-color: #ff6b6b;
+  }
+  
+  .btn-danger:hover {
+    background-color: #fa5252;
+    border-color: #fa5252;
+  }
+
+  /* 通知提示样式 */
+  #notification {
+    background-color: #d4edda;
+    color: #155724;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.2px;
+  }
+
+  /* 标题字体 - GitHub 风格 */
+  h3, .modal-title {
+    font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #0969da;
+  }
+
+  /* 表格标题字体 */
+  .table th {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-weight: normal;
+    font-size: 15px;
+    color: #24292f;
+    background-color: #f6f8fa; /* GitHub 表头背景色 */
+    border-bottom: 1px solid #d0d7de; /* GitHub 边框颜色 */
+  }
+
+  /* 表格内容字体 */
+  .table td {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #24292f;
+    font-weight: normal;
+  }
+
+  /* 导航标签字体 */
+  .nav-tabs .nav-link {
+    font-size: 14px;
+    font-weight: normal;
+    color: #57606a; /* GitHub 次要文本颜色 */
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #0969da; /* GitHub 主题蓝色 */
+    border-bottom: 2px solid #0969da;
+  }
+
+  /* 按钮字体 */
+  .btn {
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+  }
+
+  /* 分类标签字体 */
+  .category-cell {
+    font-size: 14px;
+    font-weight: normal;
+    color: #24292f;
+  }
+
+  /* URL链接字体 */
+  .url-link {
+    font-family: KaiTi, '楷体', STKaiti, '华文楷体', sans-serif;
+    font-size: 14px;
+    color: #0969da; /* GitHub 链接蓝色 */
+    font-weight: normal;
+  }
+
+  .url-link:hover {
+    color: #1a7f37; /* GitHub 链接悬停颜色 */
+  }
+
+  /* 表单标签字体 */
+  .form-label {
+    font-size: 14px;
+    font-weight: normal;
+    color: #24292f;
+  }
+
+  /* 通知提示字体 */
+  #notification {
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #dafbe1; /* GitHub 成功提示背景色 */
+    color: #1a7f37; /* GitHub 成功提示文本色 */
+  }
+
+  /* 分页控件字体 */
+  .pagination .page-link {
+    font-size: 14px;
+    font-weight: normal;
+    color: #0969da;
+  }
+
+  /* 模态框标题 */
+  .modal-header .modal-title {
+    color: #24292f;
+  }
+
+  /* URL 链接使用等宽字体 */
+  .url-link {
+    font-family: Consolas, "Cascadia Code", "Source Code Pro", monospace;
+    font-size: 13px;
+  }
