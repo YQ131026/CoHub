@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pagination = document.getElementById('pagination');
     const inputFeedback = document.getElementById('inputFeedback');
     const editButton = document.getElementById('editButton');
-    const importButton = document.getElementById('importButton');
     const exportButton = document.getElementById('exportButton');
     const actionHeader = document.getElementById('actionHeader');
     const categoryOptions = document.getElementById('categoryOptions'); // <datalist>元素
@@ -67,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         editButton.disabled = true;
         addToggleButton.disabled = true;
-        importButton.disabled = true;
         exportButton.disabled = true;
         updateButton.disabled = true;
         manageRemotesButton.disabled = true;
@@ -78,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderWebsiteList();
         editButton.disabled = false;
         addToggleButton.disabled = false;
-        importButton.disabled = false;
         exportButton.disabled = false;
         updateButton.disabled = false;
         manageRemotesButton.disabled = false;
@@ -96,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderWebsiteList();
         editButton.disabled = false;
         addToggleButton.disabled = false;
-        importButton.disabled = false;
         exportButton.disabled = false;
         updateButton.disabled = false;
         manageRemotesButton.disabled = false;
@@ -181,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
       addRemoteFeedback.textContent = '';
     });
 
-    // 点击添加远程地址按钮时添加新的远程��址
+    // 点击添加远程地址按钮时添加新的远程址
     addRemoteButton.addEventListener('click', () => {
       const url = addRemoteUrlInput.value.trim();
       if (!isValidUrl(url)) {
@@ -586,60 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 导入网站列表
-    function importWebsites() {
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = '.json,application/json';
-      fileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const importedWebsites = JSON.parse(e.target.result);
-
-            if (!Array.isArray(importedWebsites)) {
-              alert('Invalid file format.');
-              return;
-            }
-
-            chrome.storage.sync.get(['websites'], (result) => {
-              let existingWebsites = result.websites || [];
-
-              // 创建一个 Map，以 URL 为键，便于查找和覆盖
-              const websiteMap = new Map();
-              existingWebsites.forEach(site => {
-                if (site.url) {
-                  websiteMap.set(site.url, site);
-                }
-              });
-
-              // 合并导入的数据，覆盖已有的 URL
-              importedWebsites.forEach(site => {
-                if (site.url && site.name) {
-                  websiteMap.set(site.url, site);
-                }
-              });
-
-              // 将合并后的数据转换为数组并保存
-              const mergedWebsites = Array.from(websiteMap.values());
-              chrome.storage.sync.set({ websites: mergedWebsites }, () => {
-                console.log('Websites have been imported:', mergedWebsites);
-                loadWebsites();
-                alert('Import successful.');
-              });
-            });
-          } catch (error) {
-            alert('Failed to import. Please ensure the file is a valid JSON.');
-          }
-        };
-        reader.readAsText(file);
-      });
-      fileInput.click();
-    }
-
     // 验证 URL 格式
     function isValidUrl(string) {
       try {
@@ -678,7 +620,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 禁用其他按钮
         searchToggleButton.disabled = true;
         addToggleButton.disabled = true;
-        importButton.disabled = true;
         exportButton.disabled = true;
         updateButton.disabled = true;
         manageRemotesButton.disabled = true;
@@ -694,7 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 启用其他按钮
         searchToggleButton.disabled = false;
         addToggleButton.disabled = false;
-        importButton.disabled = false;
         exportButton.disabled = false;
         updateButton.disabled = false;
         manageRemotesButton.disabled = false;
@@ -754,9 +694,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 点击导出按钮时导出网站列表
     exportButton.addEventListener('click', exportWebsites);
-
-    // 点击导入按钮时导入网站列表
-    importButton.addEventListener('click', importWebsites);
 
     // 搜索输入框事件
     searchInput.addEventListener('input', () => {
