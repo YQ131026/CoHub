@@ -210,19 +210,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadWebsites() {
       chrome.storage.sync.get(['websites'], (result) => {
         console.log('Retrieved websites:', result.websites);
+        // 清除旧的缓存数据
+        websitesData = [];
+        // 设置新的数据
         websitesData = result.websites || [];
-
         // 过滤空的或无效的条目
         websitesData = websitesData.filter(site => site && site.name && site.url);
         console.log('Filtered websites:', websitesData);
 
-        // 渲染分类选项卡
+        // 重新渲染所有相关UI
         renderCategoryTabs();
-
-        // 渲染分类下拉列表
         renderCategoryDatalist();
-
-        // 渲染网站列表
         renderWebsiteList();
       });
     }
@@ -789,44 +787,53 @@ document.addEventListener('DOMContentLoaded', () => {
       return selectRemoteUrl.value && selectRemoteUrl.value !== 'new';
     }
 
-    // 执行远程更新
+    // 处理远程更新
     function performRemoteUpdate(url) {
       if (!isValidUrl(url)) {
         remoteFeedback.textContent = 'Invalid URL format.';
         return;
       }
 
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Network response was not ok (status: ${response.status})`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (!Array.isArray(data)) {
-            throw new Error('Invalid data format: expected an array.');
-          }
+      // 添加时间戳防止缓存
+      const timestampedUrl = `${url}${url.includes('?') ? '&' : '?'}_t=${Date.now()}`;
+      
+      fetch(timestampedUrl, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok (status: ${response.status})`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid data format: expected an array.');
+        }
 
-          // Validate each entry
-          const validData = data.filter(site => site && site.name && site.url);
-          if (validData.length === 0) {
-            throw new Error('No valid website entries found in the imported data.');
-          }
+        // Validate each entry
+        const validData = data.filter(site => site && site.name && site.url);
+        if (validData.length === 0) {
+          throw new Error('No valid website entries found in the imported data.');
+        }
 
-          // 直接替换本地数据，而不是合并
-          chrome.storage.sync.set({ websites: validData }, () => {
-            console.log('Websites have been updated from remote URL:', validData);
-            websitesData = validData; // 更新本地缓存
-            loadWebsites(); // 重新加载网站列表
-            updateModal.hide();
-            showNotification('Update successful.');
-          });
-        })
-        .catch(error => {
-          console.error('Error updating websites from remote URL:', error);
-          remoteFeedback.textContent = `Error: ${error.message}`;
+        // 更新存储和缓存
+        chrome.storage.sync.set({ websites: validData }, () => {
+          console.log('Websites have been updated from remote URL:', validData);
+          websitesData = validData; // 更新本地缓存
+          loadWebsites(); // 重新加载网站列表
+          updateModal.hide();
+          showNotification('Update successful.');
         });
+      })
+      .catch(error => {
+        console.error('Error updating websites from remote URL:', error);
+        remoteFeedback.textContent = `Error: ${error.message}`;
+      });
     }
 
     // 管理远程地址模态对话框相关功能
@@ -956,72 +963,6 @@ document.addEventListener('DOMContentLoaded', () => {
         existingRemotes = existingRemotes.filter(remote => remote.id !== id);
         chrome.storage.sync.set({ remoteUrls: existingRemotes }, () => {
           console.log(`Remote URL with ID ${id} deleted.`);
-          loadRemoteUrls();
-        });
-      });
-    }
-
-    // 处理远程更新
-    function performRemoteUpdate(url) {
-      if (!isValidUrl(url)) {
-        remoteFeedback.textContent = 'Invalid URL format.';
-        return;
-      }
-
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Network response was not ok (status: ${response.status})`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (!Array.isArray(data)) {
-            throw new Error('Invalid data format: expected an array.');
-          }
-
-          // Validate each entry
-          const validData = data.filter(site => site && site.name && site.url);
-          if (validData.length === 0) {
-            throw new Error('No valid website entries found in the imported data.');
-          }
-
-          // 直接替换本地数据，而不是合并
-          chrome.storage.sync.set({ websites: validData }, () => {
-            console.log('Websites have been updated from remote URL:', validData);
-            websitesData = validData; // 更新本地缓存
-            loadWebsites(); // 重新加载网站列表
-            updateModal.hide();
-            showNotification('Update successful.');
-          });
-        })
-        .catch(error => {
-          console.error('Error updating websites from remote URL:', error);
-          remoteFeedback.textContent = `Error: ${error.message}`;
-        });
-    }
-
-    // 加载远程 URL 数据
-    function loadRemoteUrls() {
-      chrome.storage.sync.get(['remoteUrls'], (result) => {
-        remoteUrls = result.remoteUrls || [];
-        populateSelectRemoteUrl();
-        populateRemoteUrlList();
-      });
-    }
-
-    // 添加远程地址
-    function addRemoteUrl(url) {
-      const newRemote = {
-        id: Date.now().toString(),
-        url: url
-      };
-
-      chrome.storage.sync.get(['remoteUrls'], (result) => {
-        let existingRemotes = result.remoteUrls || [];
-        existingRemotes.push(newRemote);
-        chrome.storage.sync.set({ remoteUrls: existingRemotes }, () => {
-          console.log('New remote URL added:', newRemote);
           loadRemoteUrls();
         });
       });
